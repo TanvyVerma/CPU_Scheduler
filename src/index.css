@@ -1,0 +1,89 @@
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Outfit:wght@300;400;500;600;700&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg-1: #07080d;
+  --bg-2: #0e1018;
+  --bg-3: #151720;
+  --bg-4: #1d2030;
+  --bg-5: #252840;
+  --border: rgba(255, 255, 255, 0.07);
+  --border-2: rgba(255, 255, 255, 0.13);
+  --border-3: rgba(255, 255, 255, 0.2);
+  --text: #dde1f0;
+  --text-2: #7e85a0;
+  --text-3: #454a60;
+  --accent: #7c6fff;
+  --accent-2: #b39dff;
+  --green: #0ecf8e;
+  --amber: #f5a623;
+  --red: #ff6b6b;
+  --blue: #5ba4f5;
+  --cyan: #22d3ee;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Outfit', sans-serif;
+  background: var(--bg-1);
+  color: var(--text);
+  font-size: 13px;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Scrollbars */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--bg-5); border-radius: 2px; }
+::-webkit-scrollbar-thumb:hover { background: var(--border-2); }
+
+/* Animations */
+@keyframes pulseGreen {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(14, 207, 142, 0.35); }
+  50% { box-shadow: 0 0 0 6px rgba(14, 207, 142, 0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideInLeft {
+  from { opacity: 0; transform: translateX(-10px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes shimmer {
+  from { background-position: -200% 0; }
+  to { background-position: 200% 0; }
+}
+
+.animate-fade-in { animation: fadeIn 0.25s ease-out; }
+.animate-slide-in { animation: slideInLeft 0.2s ease-out; }
+.animate-pulse-green { animation: pulseGreen 1.2s ease-in-out infinite; }
+
+/* Gantt block hover */
+.gantt-block:hover { filter: brightness(1.15); }
+
+/* Number input arrows hidden */
+input[type='number']::-webkit-inner-spin-button,
+input[type='number']::-webkit-outer-spin-button { opacity: 0.4; }
+
+/* Range input */
+input[type='range'] { accent-color: var(--accent); }
+
+/* Selection */
+::selection { background: rgba(124, 111, 255, 0.3); color: var(--text); }
