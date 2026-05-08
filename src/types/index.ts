@@ -33,6 +33,24 @@ export interface GanttBlock {
   end: number;
   color: ProcessColor;
   level?: number; // for MLFQ
+  coreId?: number;
+}
+
+export interface CoreMetrics {
+  coreId: number;
+  assignedCount: number;
+  busyTime: number;
+  idleTime: number;
+  utilization: number;
+}
+
+export interface CoreTimeline {
+  coreId: number;
+  gantt: GanttBlock[];
+  busyTime: number;
+  idleTime: number;
+  utilization: number;
+  assignedCount: number;
 }
 
 // ─── Metrics ───────────────────────────────────────────────────────────────
@@ -46,11 +64,14 @@ export interface SchedulingMetrics {
   throughput: number;
   contextSwitches: number;
   totalTime: number;
+  coreMetrics?: CoreMetrics[];
+  mode?: 'single' | 'multi';
 }
 
 export interface SimulationResult {
   gantt: GanttBlock[];
   metrics: SchedulingMetrics;
+  coreTimelines?: CoreTimeline[];
 }
 
 // ─── Algorithm ─────────────────────────────────────────────────────────────
@@ -130,6 +151,12 @@ export interface SimulationStore {
   setQuantum: (q: number) => void;
   contextSwitchCost: number;
   setContextSwitchCost: (c: number) => void;
+
+  // Simulation mode
+  mode: 'single' | 'multi';
+  setMode: (mode: 'single' | 'multi') => void;
+  coreCount: number;
+  setCoreCount: (count: number) => void;
 
   // Simulation
   simResult: SimulationResult | null;

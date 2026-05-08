@@ -2,30 +2,41 @@ import { useSimulationStore } from '@/store/useSimulationStore';
 import { PROCESS_COLORS } from '@/utils/helpers';
 import { Trash2, Plus } from 'lucide-react';
 import Button from '@/components/common/Button';
+import Tooltip from '@/components/common/Tooltip';
 
 export default function ProcessTable() {
   const { processes, addProcess, removeProcess, updateProcess } = useSimulationStore();
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-2">
-        <span className="text-[10px] font-semibold tracking-[0.08em] uppercase text-[#454a60]">
+      <div className="flex items-center justify-between mb-4">
+        <span className="text-sm font-semibold tracking-wide uppercase text-[#cbd5ff]">
           Processes ({processes.length})
         </span>
-        <Button variant="primary" size="xs" onClick={addProcess}>
-          <Plus size={10} /> Add
+        <Button variant="primary" size="sm" onClick={addProcess} className="hover:bg-[#7c6fff]/80">
+          <Plus size={14} /> Add
         </Button>
       </div>
 
       <table className="w-full border-collapse">
         <thead>
           <tr>
-            {['PID', 'AT', 'BT', 'Pri', ''].map((h) => (
+            {[
+              { key: 'PID', label: 'Process ID' },
+              { key: 'AT', label: 'Arrival Time' },
+              { key: 'BT', label: 'Burst Time' },
+              { key: 'PRI', label: 'Priority' },
+              { key: '', label: '' }
+            ].map(({ key, label }) => (
               <th
-                key={h}
-                className="text-[9px] font-semibold tracking-[0.07em] uppercase text-[#454a60] pb-1.5 text-left px-1"
+                key={key}
+                className="text-xs font-semibold tracking-wide uppercase text-[#cbd5ff] pb-3 text-left px-2"
               >
-                {h}
+                {key && (
+                  <Tooltip content={label}>
+                    <span className="cursor-help">{key}</span>
+                  </Tooltip>
+                )}
               </th>
             ))}
           </tr>
@@ -34,33 +45,42 @@ export default function ProcessTable() {
           {processes.map((p, i) => {
             const col = PROCESS_COLORS[i % PROCESS_COLORS.length];
             return (
-              <tr key={p.id} className="group">
-                <td className="py-[2px] px-1">
+              <tr key={p.id} className="group hover:bg-white/[0.05] transition-colors rounded-lg">
+                <td className="py-3 px-2">
                   <span
-                    className="inline-flex items-center justify-center w-[28px] h-[20px] rounded text-[10px] font-semibold font-mono"
+                    className="inline-flex items-center justify-center w-[36px] h-[28px] rounded-md text-sm font-semibold font-mono shadow-sm"
                     style={{ background: col.bg, border: `1px solid ${col.border}`, color: col.text }}
                   >
                     {p.id}
                   </span>
                 </td>
-                {(['arrivalTime', 'burstTime', 'priority'] as const).map((field) => (
-                  <td key={field} className="py-[2px] px-1">
-                    <input
-                      type="number"
-                      min={field === 'arrivalTime' ? 0 : 1}
-                      max={field === 'priority' ? 9 : 999}
-                      value={p[field]}
-                      onChange={(e) => updateProcess(p.id, field, e.target.value)}
-                      className="w-[38px] bg-[#151720] border border-white/[0.07] rounded-[4px] text-[#dde1f0] font-mono text-[11px] px-1.5 py-1 outline-none focus:border-[#7c6fff] transition-colors"
-                    />
+                {([
+                  { field: 'arrivalTime' as const, label: 'Arrival Time (ms)' },
+                  { field: 'burstTime' as const, label: 'Burst Time (ms)' },
+                  { field: 'priority' as const, label: 'Priority (1-9, lower = higher)' }
+                ] as const).map(({ field, label }) => (
+                  <td key={field} className="py-3 px-2">
+                    <Tooltip content={label}>
+                      <input
+                        type="number"
+                        inputMode="numeric"
+                        pattern="[0-9]*"
+                        min={field === 'arrivalTime' ? 0 : 1}
+                        max={field === 'priority' ? 9 : 999}
+                        value={p[field]}
+                        placeholder="0"
+                        onChange={(e) => updateProcess(p.id, field, e.target.value)}
+                        className="w-full min-w-[60px] bg-[#1a1d2e] border border-white/[0.15] rounded-lg text-[#dde1f0] font-mono text-sm font-semibold px-3 py-2 outline-none focus:border-[#7c6fff] focus:ring-2 focus:ring-[#7c6fff]/20 transition-all hover:border-white/[0.2] appearance-none"
+                      />
+                    </Tooltip>
                   </td>
                 ))}
-                <td className="py-[2px] px-1">
+                <td className="py-3 px-2">
                   <button
                     onClick={() => removeProcess(p.id)}
-                    className="opacity-0 group-hover:opacity-100 text-[#454a60] hover:text-[#ff6b6b] transition-all p-1 rounded"
+                    className="opacity-0 group-hover:opacity-100 text-[#454a60] hover:text-[#ff6b6b] transition-all p-2 rounded-md hover:bg-white/[0.05]"
                   >
-                    <Trash2 size={11} />
+                    <Trash2 size={14} />
                   </button>
                 </td>
               </tr>
@@ -70,7 +90,7 @@ export default function ProcessTable() {
       </table>
 
       {!processes.length && (
-        <div className="text-center py-4 text-[#454a60] text-[11px]">
+        <div className="text-center py-8 text-[#454a60] text-sm">
           No processes. Click Add to start.
         </div>
       )}

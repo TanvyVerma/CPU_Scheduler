@@ -28,7 +28,7 @@ export default function AIPanel() {
         ) : (
           <>
             <Brain size={11} />
-            Analyze with Claude AI
+            Analyze with Groq AI
           </>
         )}
       </Button>
@@ -38,7 +38,7 @@ export default function AIPanel() {
           <div className="flex items-center gap-2 mb-2">
             <span className="text-[12px]">🤖</span>
             <span className="text-[9px] font-semibold tracking-[0.08em] uppercase text-[#b39dff]">
-              Claude Analysis
+              Groq Analysis
             </span>
           </div>
           <div

@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import type { Process, AlgorithmId, SimulationTab, SimulationResult, SchedulingMetrics } from '@/types';
 import { runAlgorithm } from '@/algorithms';
+import { runMultiCoreSimulation } from '@/engine/multiCoreEngine';
 import { ALGORITHM_INFO } from '@/data/algorithms';
 import { randomProcesses, generatePID } from '@/utils/helpers';
 
@@ -18,6 +19,10 @@ interface SimStore {
   setQuantum: (q: number) => void;
   contextSwitchCost: number;
   setContextSwitchCost: (c: number) => void;
+  mode: 'single' | 'multi';
+  setMode: (mode: 'single' | 'multi') => void;
+  coreCount: number;
+  setCoreCount: (count: number) => void;
   simResult: SimulationResult | null;
   runSimulation: () => void;
   clearResult: () => void;
@@ -82,11 +87,17 @@ export const useSimulationStore = create<SimStore>((set, get) => ({
   setQuantum(q) { set({ quantum: Math.max(1, q), simResult: null }); },
   contextSwitchCost: 1,
   setContextSwitchCost(c) { set({ contextSwitchCost: Math.max(0, c) }); },
+  mode: 'single',
+  setMode(mode) { set({ mode, simResult: null }); },
+  coreCount: 2,
+  setCoreCount(count) { set({ coreCount: Math.max(2, count), simResult: null }); },
 
   simResult: null,
   runSimulation() {
-    const { algorithm, processes, quantum } = get();
-    const result = runAlgorithm(algorithm, processes, quantum);
+    const { algorithm, processes, quantum, mode, coreCount } = get();
+    const result = mode === 'multi'
+      ? runMultiCoreSimulation(algorithm, processes, quantum, coreCount)
+      : runAlgorithm(algorithm, processes, quantum);
     set({ simResult: result, playbackIndex: 0, playbackState: 'idle' });
   },
   clearResult() { set({ simResult: null, playbackIndex: 0, playbackState: 'idle' }); },
@@ -155,18 +166,44 @@ PER-PROCESS: ${m.results.map((r) => `${r.id}(WT:${r.waitingTime},TAT:${r.turnaro
 
 In 3-4 sentences: (1) Is this good/poor for this workload? (2) Which algorithm would be better and why? (3) One concrete optimization. Wrap algorithm names in <strong> tags.`;
     try {
-      const res = await fetch('https://api.anthropic.com/v1/messages', {
+      const apiKey = import.meta.env.VITE_GROQ_API_KEY;
+      console.log('API Key loaded:', !!apiKey, 'Key length:', apiKey?.length);
+      if (!apiKey) {
+        set({ aiAnalysis: 'API key not configured. Check environment variables.', aiLoading: false });
+        return;
+      }
+      const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${apiKey}`
+        },
         body: JSON.stringify({
-          model: 'claude-sonnet-4-20250514', max_tokens: 1000,
+          model: 'openai/gpt-oss-20b',
           messages: [{ role: 'user', content: prompt }],
+          max_tokens: 1000,
+          temperature: 0.7,
         }),
       });
+      if (!res.ok) {
+        let errData;
+        try {
+          errData = await res.json();
+        } catch {
+          errData = { error: res.statusText, body: await res.text() };
+        }
+        console.error('Groq API error response:', errData);
+        const msg = errData?.error?.message || errData?.error || res.statusText;
+        set({ aiAnalysis: `API Error ${res.status}: ${msg}`, aiLoading: false });
+        return;
+      }
       const data = await res.json();
-      const text = (data.content as Array<{ type: string; text?: string }>)?.find((c) => c.type === 'text')?.text ?? 'Analysis unavailable.';
+      const text = data.choices?.[0]?.message?.content ?? 'Analysis unavailable.';
       set({ aiAnalysis: text, aiLoading: false });
-    } catch { set({ aiAnalysis: 'AI unavailable. Check network.', aiLoading: false }); }
+    } catch (e) { 
+      console.error('AI analysis error:', e);
+      set({ aiAnalysis: `Error: ${e instanceof Error ? e.message : String(e)}`, aiLoading: false }); 
+    }
   },
 
   showCSVImport: false,

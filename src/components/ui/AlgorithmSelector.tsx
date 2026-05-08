@@ -7,24 +7,24 @@ export default function AlgorithmSelector() {
 
   return (
     <div>
-      <div className="text-[10px] font-semibold tracking-[0.08em] uppercase text-[#454a60] mb-2">
+      <div className="text-[11px] font-semibold tracking-[0.08em] uppercase text-[#cbd5ff] mb-3">
         Algorithm
       </div>
-      <div className="grid grid-cols-2 gap-1.5">
+      <div className="grid grid-cols-2 gap-2">
         {ALGORITHM_INFO.map((algo) => (
           <button
             key={algo.id}
             title={algo.description}
             onClick={() => setAlgorithm(algo.id as AlgorithmId)}
             className={`
-              px-2.5 py-2 rounded-lg text-left border transition-all text-[11px]
+              px-3 py-3 rounded-lg text-left border transition-all duration-200 hover:shadow-md
               ${algorithm === algo.id
-                ? 'bg-[rgba(124,111,255,0.12)] border-[#7c6fff] text-[#b39dff]'
-                : 'bg-[#151720] border-white/[0.07] text-[#7e85a0] hover:border-white/[0.13] hover:text-[#dde1f0]'}
+                ? 'bg-[rgba(124,111,255,0.15)] border-[#7c6fff] text-[#b39dff] shadow-lg shadow-[#7c6fff]/10'
+                : 'bg-[#151720] border-white/[0.07] text-[#7e85a0] hover:border-white/[0.13] hover:text-[#dde1f0] hover:bg-[#1d2030]'}
             `}
           >
-            <div className="font-semibold">{algo.name}</div>
-            <div className="text-[9px] opacity-55 mt-0.5">{algo.tag}</div>
+            <div className="font-semibold text-[12px] mb-1">{algo.name}</div>
+            <div className="text-[11px] opacity-80 leading-tight text-[#cbd5ff]">{algo.tag}</div>
           </button>
         ))}
       </div>

@@ -5,7 +5,7 @@ import { useSimulationStore } from '@/store/useSimulationStore';
 function ProcessChip({ pid, style }: { pid: string; style?: React.CSSProperties }) {
   return (
     <span
-      className="inline-flex items-center px-1.5 py-0.5 rounded font-mono text-[10px] font-semibold"
+      className="inline-flex items-center px-2 py-1 rounded font-mono text-[11px] font-semibold"
       style={style}
     >
       {pid}
@@ -29,7 +29,7 @@ function QueueBox({
       className="bg-[#151720] rounded-lg border border-white/[0.07] p-2"
       style={{ flex }}
     >
-      <div className="text-[9px] font-semibold tracking-[0.08em] uppercase mb-1.5" style={{ color }}>
+      <div className="text-[10px] font-semibold tracking-[0.08em] uppercase mb-1.5" style={{ color }}>
         {label}
       </div>
       <div className="flex flex-wrap gap-1 min-h-[18px]">{children}</div>
@@ -61,13 +61,13 @@ export default function QueueDisplay() {
           ? queues.ready.map((p) => (
               <ProcessChip key={p.id} pid={p.id} style={getChipStyle(p.id)} />
             ))
-          : <span className="text-[10px] text-[#454a60]">empty</span>}
+          : <span className="text-[11px] text-[#cbd5ff]">empty</span>}
       </QueueBox>
 
       <QueueBox label="⚙ CPU" color="#0ecf8e" flex="0.5">
         {queues.running
           ? <ProcessChip pid={queues.running} style={getChipStyle(queues.running)} />
-          : <span className="text-[10px] text-[#454a60]">idle</span>}
+          : <span className="text-[11px] text-[#cbd5ff]">idle</span>}
       </QueueBox>
 
       <QueueBox label="✓ Done" color="#454a60">
@@ -75,7 +75,7 @@ export default function QueueDisplay() {
           ? queues.completed.map((pid) => (
               <ProcessChip key={pid} pid={pid} style={doneStyle} />
             ))
-          : <span className="text-[10px] text-[#454a60]">none</span>}
+          : <span className="text-[11px] text-[#cbd5ff]">none</span>}
       </QueueBox>
     </div>
   );

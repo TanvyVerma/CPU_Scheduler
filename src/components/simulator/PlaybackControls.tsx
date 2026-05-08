@@ -9,23 +9,23 @@ export default function PlaybackControls() {
   const randomizeProcesses = useSimulationStore((s) => s.randomizeProcesses);
 
   return (
-    <div className="flex flex-col gap-2">
-      <div className="flex gap-1.5 flex-wrap">
-        <Button variant="primary" onClick={play} disabled={isPlaying}>
-          <Play size={11} />
-          {isPlaying ? 'Playing…' : 'Play'}
+    <div className="flex flex-col gap-4">
+      <div className="flex gap-3 flex-wrap">
+        <Button variant="success" onClick={play} disabled={isPlaying} size="lg" className="font-semibold px-6 py-3 hover:scale-105 transition-transform">
+          <Play size={16} />
+          {isPlaying ? 'Playing…' : 'Simulate'}
         </Button>
-        <Button onClick={pause} disabled={!isPlaying}>
-          <Pause size={11} /> Pause
+        <Button variant="default" onClick={pause} disabled={!isPlaying} size="md" className="hover:bg-[#151720]">
+          <Pause size={14} /> Pause
         </Button>
-        <Button onClick={stepForward} disabled={!canStep && !isPlaying}>
-          <SkipForward size={11} /> Step
+        <Button variant="default" onClick={stepForward} disabled={!canStep && !isPlaying} size="md" className="hover:bg-[#151720]">
+          <SkipForward size={14} /> Step
         </Button>
-        <Button variant="danger" onClick={reset}>
-          <RotateCcw size={11} /> Reset
+        <Button variant="danger" onClick={reset} size="md" className="hover:bg-red-600">
+          <RotateCcw size={14} /> Reset
         </Button>
-        <Button onClick={randomizeProcesses}>
-          <Shuffle size={11} /> Random
+        <Button variant="default" onClick={randomizeProcesses} size="md" className="hover:bg-[#151720]">
+          <Shuffle size={14} /> Random
         </Button>
       </div>
       <SpeedControl />

@@ -8,6 +8,8 @@ import ProcessTable from '@/components/ui/ProcessTable';
 import AlgorithmSelector from '@/components/ui/AlgorithmSelector';
 import QuantumControl from '@/components/ui/QuantumControl';
 import ContextSwitchControl from '@/components/ui/ContextSwitchControl';
+import ModeSelector from '@/components/ui/ModeSelector';
+import CoreCountControl from '@/components/ui/CoreCountControl';
 import PlaybackControls from '@/components/simulator/PlaybackControls';
 
 // Center components
@@ -55,81 +57,99 @@ export default function SimulationPage() {
   }
 
   return (
-    <div className="flex h-full overflow-hidden">
+    <div className="flex h-full overflow-hidden bg-[#07080d] text-[#dde1f0] min-w-[1200px]">
       {/* ── LEFT PANEL ── */}
-      <aside className="w-[282px] flex-shrink-0 bg-[#0e1018] border-r border-white/[0.07] flex flex-col overflow-hidden">
-        <div className="flex items-center justify-between px-3 py-2.5 border-b border-white/[0.07] flex-shrink-0">
-          <span className="text-[10px] font-semibold tracking-[0.09em] uppercase text-[#454a60]">
+      <aside className="w-[320px] flex-shrink-0 bg-[#0e1018] border-r border-white/[0.07] flex flex-col overflow-hidden">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-white/[0.07] flex-shrink-0">
+          <span className="text-sm font-semibold tracking-wide uppercase text-[#454a60]">
             Setup
           </span>
-          <div className="flex gap-1.5">
-            <Button size="xs" onClick={() => setShowCSV(true)}>
-              <Upload size={9} /> CSV
+          <div className="flex gap-2">
+            <Button size="sm" onClick={() => setShowCSV(true)} variant="ghost" className="hover:bg-[#151720]">
+              <Upload size={14} /> CSV
             </Button>
-            <Button size="xs" onClick={handleExportJSON}>
-              <FileDown size={9} /> Save
+            <Button size="sm" onClick={handleExportJSON} variant="ghost" className="hover:bg-[#151720]">
+              <FileDown size={14} /> Save
             </Button>
           </div>
         </div>
 
-        <div className="flex-1 overflow-y-auto px-3 py-3 space-y-3">
-          <ProcessTable />
-          <Divider className="my-0" />
-          <AlgorithmSelector />
-          <Divider className="my-0" />
-          <QuantumControl />
-          <Divider className="my-0" />
-          <ContextSwitchControl />
-          <Divider className="my-0" />
-          <PlaybackControls />
+        <div className="flex-1 overflow-y-auto px-6 py-6 space-y-6">
+          <div className="bg-[#151720] rounded-lg border border-white/[0.07] p-4">
+            <ProcessTable />
+          </div>
+          <div className="bg-[#151720] rounded-lg border border-white/[0.07] p-4">
+            <ModeSelector />
+          </div>
+          <div className="bg-[#151720] rounded-lg border border-white/[0.07] p-4">
+            <AlgorithmSelector />
+          </div>
+          <div className="bg-[#151720] rounded-lg border border-white/[0.07] p-4">
+            <CoreCountControl />
+          </div>
+          <div className="bg-[#151720] rounded-lg border border-white/[0.07] p-4">
+            <QuantumControl />
+          </div>
+          <div className="bg-[#151720] rounded-lg border border-white/[0.07] p-4">
+            <ContextSwitchControl />
+          </div>
+          <div className="bg-[#151720] rounded-lg border border-white/[0.07] p-4">
+            <PlaybackControls />
+          </div>
         </div>
       </aside>
 
       {/* ── CENTER PANEL ── */}
       <main className="flex-1 flex flex-col overflow-hidden min-w-0">
         {/* Gantt Chart */}
-        <GanttChart />
+        <div className="bg-[#0e1018] border-b border-white/[0.07]">
+          <GanttChart />
+        </div>
 
         {/* Queue Display */}
-        <QueueDisplay />
+        <div className="bg-[#0e1018] border-b border-white/[0.07] px-6 py-4">
+          <QueueDisplay />
+        </div>
 
         {/* Metrics row */}
-        <div className="grid grid-cols-6 gap-1.5 px-4 py-2 bg-[#0e1018] border-b border-white/[0.07] flex-shrink-0">
-          {metrics ? (
-            <>
-              <MetricCard label="Avg Wait"   value={metrics.avgWaitingTime.toFixed(1)}   unit="ms" />
-              <MetricCard label="Avg TAT"    value={metrics.avgTurnaroundTime.toFixed(1)} unit="ms" />
-              <MetricCard label="Avg RT"     value={metrics.avgResponseTime.toFixed(1)}   unit="ms" />
-              <MetricCard
-                label="CPU Util"
-                value={metrics.cpuUtilization.toFixed(1)}
-                unit="%"
-                color={metrics.cpuUtilization > 80 ? '#0ecf8e' : metrics.cpuUtilization > 60 ? '#f5a623' : '#ff6b6b'}
-              />
-              <MetricCard label="Throughput" value={metrics.throughput.toFixed(3)} unit="p/ms" />
-              <MetricCard
-                label="Ctx Sw"
-                value={metrics.contextSwitches}
-                color={metrics.contextSwitches > processes.length * 3 ? '#ff6b6b' : undefined}
-              />
-            </>
-          ) : (
-            ['Avg Wait', 'Avg TAT', 'Avg RT', 'CPU Util', 'Throughput', 'Ctx Sw'].map((l) => (
-              <MetricCard key={l} label={l} value="--" />
-            ))
-          )}
+        <div className="bg-[#151720] border-b border-white/[0.07] px-6 py-4">
+          <div className="grid grid-cols-6 gap-4">
+            {metrics ? (
+              <>
+                <MetricCard label="Avg Wait"   value={metrics.avgWaitingTime.toFixed(1)}   unit="ms" />
+                <MetricCard label="Avg TAT"    value={metrics.avgTurnaroundTime.toFixed(1)} unit="ms" />
+                <MetricCard label="Avg RT"     value={metrics.avgResponseTime.toFixed(1)}   unit="ms" />
+                <MetricCard
+                  label="CPU Util"
+                  value={metrics.cpuUtilization.toFixed(1)}
+                  unit="%"
+                  color={metrics.cpuUtilization > 80 ? '#0ecf8e' : metrics.cpuUtilization > 60 ? '#f5a623' : '#ff6b6b'}
+                />
+                <MetricCard label="Throughput" value={metrics.throughput.toFixed(3)} unit="p/ms" />
+                <MetricCard
+                  label="Ctx Sw"
+                  value={metrics.contextSwitches}
+                  color={metrics.contextSwitches > processes.length * 3 ? '#ff6b6b' : undefined}
+                />
+              </>
+            ) : (
+              ['Avg Wait', 'Avg TAT', 'Avg RT', 'CPU Util', 'Throughput', 'Ctx Sw'].map((l) => (
+                <MetricCard key={l} label={l} value="--" />
+              ))
+            )}
+          </div>
         </div>
 
         {/* Sub tabs */}
-        <div className="flex gap-1 px-4 py-2 border-b border-white/[0.07] flex-shrink-0 bg-[#07080d]">
+        <div className="flex gap-2 px-6 py-3 border-b border-white/[0.07] bg-[#07080d]">
           {([['results', 'Results Table'], ['charts', 'Metric Charts'], ['timeline', 'Timeline']] as const).map(
             ([id, label]) => (
               <button
                 key={id}
                 onClick={() => setCenterTab(id)}
-                className={`px-3 py-1 rounded-md text-[11px] font-medium transition-all ${
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all hover:bg-[#151720] ${
                   centerTab === id
-                    ? 'bg-[#151720] text-[#dde1f0] border border-white/[0.07]'
+                    ? 'bg-[#1a1d2e] text-[#dde1f0] border border-white/[0.1]'
                     : 'text-[#7e85a0] hover:text-[#dde1f0]'
                 }`}
               >
@@ -138,45 +158,65 @@ export default function SimulationPage() {
             )
           )}
           {isSimulated && (
-            <div className="ml-auto flex gap-1.5">
-              <Button size="xs" onClick={handleExportCSV}>📊 CSV</Button>
-              <Button size="xs" onClick={handleExportSVG}>🖼 SVG</Button>
+            <div className="ml-auto flex gap-2">
+              <Button size="sm" onClick={handleExportCSV} variant="ghost" className="hover:bg-[#151720]">
+                📊 CSV
+              </Button>
+              <Button size="sm" onClick={handleExportSVG} variant="ghost" className="hover:bg-[#151720]">
+                🖼 SVG
+              </Button>
             </div>
           )}
         </div>
 
         {/* Center content */}
-        <div className="flex-1 overflow-y-auto px-4 py-4">
+        <div className="flex-1 overflow-y-auto px-6 py-6 bg-[#07080d]">
           {!isSimulated && (
-            <div className="flex flex-col items-center justify-center h-full gap-3 text-[#454a60]">
-              <div className="text-4xl">⚡</div>
-              <div className="text-[13px] text-[#7e85a0]">
-                Configure processes and algorithm, then press Play
+            <div className="flex flex-col items-center justify-center h-full gap-6 text-center">
+              <div className="relative">
+                <div className="w-20 h-20 rounded-full bg-gradient-to-br from-[#7c6fff]/20 to-[#b39dff]/20 flex items-center justify-center border border-[#7c6fff]/30">
+                  <div className="w-10 h-10 rounded-full bg-[#7c6fff] flex items-center justify-center animate-pulse">
+                    <span className="text-white text-xl">⚡</span>
+                  </div>
+                </div>
+                <div className="absolute -top-1 -right-1 w-5 h-5 bg-[#0ecf8e] rounded-full animate-ping"></div>
               </div>
-              <div className="text-[11px]">Or load a Preset from the Presets tab</div>
+              <div className="space-y-3 max-w-md">
+                <div className="text-xl font-semibold text-[#dde1f0]">
+                  Ready to Simulate
+                </div>
+                <div className="text-base text-[#7e85a0] leading-relaxed">
+                  Configure your processes and select an algorithm, then press Play to see the CPU scheduling in action.
+                </div>
+                <div className="text-sm text-[#454a60] mt-4 p-4 bg-[#151720] rounded-lg border border-white/[0.07]">
+                  💡 <strong>Tip:</strong> Try FCFS for simple scheduling or Priority for custom process ordering.
+                </div>
+              </div>
             </div>
           )}
 
           {isSimulated && metrics && (
             <>
               {centerTab === 'results' && (
-                <div className="animate-fade-in">
-                  <div className="text-[10px] font-semibold tracking-[0.08em] uppercase text-[#454a60] mb-2">
+                <div className="animate-fade-in bg-[#151720] rounded-lg border border-white/[0.07] p-6">
+                  <div className="text-sm font-semibold tracking-wide uppercase text-[#454a60] mb-4">
                     Per-Process Results
                   </div>
                   <ProcessResultTable metrics={metrics} />
                 </div>
               )}
               {centerTab === 'charts' && (
-                <div className="animate-fade-in space-y-4">
-                  <div className="text-[10px] font-semibold tracking-[0.08em] uppercase text-[#454a60]">
+                <div className="animate-fade-in space-y-6">
+                  <div className="text-sm font-semibold tracking-wide uppercase text-[#454a60]">
                     Metric Charts
                   </div>
-                  <MetricsChart metrics={metrics} />
+                  <div className="bg-[#151720] rounded-lg border border-white/[0.07] p-6">
+                    <MetricsChart metrics={metrics} />
+                  </div>
                 </div>
               )}
               {centerTab === 'timeline' && simResult && (
-                <div className="animate-fade-in">
+                <div className="animate-fade-in bg-[#151720] rounded-lg border border-white/[0.07] p-6">
                   <TimelineChart gantt={simResult.gantt} metrics={metrics} />
                 </div>
               )}
@@ -186,21 +226,21 @@ export default function SimulationPage() {
       </main>
 
       {/* ── RIGHT PANEL ── */}
-      <aside className="w-[264px] flex-shrink-0 bg-[#0e1018] border-l border-white/[0.07] flex flex-col overflow-hidden">
+      <aside className="w-[320px] flex-shrink-0 bg-[#0e1018] border-l border-white/[0.07] flex flex-col overflow-hidden">
         {/* Right tabs */}
-        <div className="flex gap-1 p-2 border-b border-white/[0.07] flex-shrink-0">
+        <div className="flex gap-2 p-4 border-b border-white/[0.07] flex-shrink-0">
           <button
             onClick={() => setRightTab('ai')}
-            className={`px-2.5 py-1 rounded-md text-[11px] font-medium transition-all ${
-              rightTab === 'ai' ? 'bg-[#151720] text-[#dde1f0] border border-white/[0.07]' : 'text-[#7e85a0] hover:text-[#dde1f0]'
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all hover:bg-[#151720] ${
+              rightTab === 'ai' ? 'bg-[#1a1d2e] text-[#dde1f0] border border-white/[0.1]' : 'text-[#7e85a0] hover:text-[#dde1f0]'
             }`}
           >
             🤖 AI
           </button>
           <button
             onClick={() => setRightTab('anomalies')}
-            className={`px-2.5 py-1 rounded-md text-[11px] font-medium transition-all flex items-center gap-1 ${
-              rightTab === 'anomalies' ? 'bg-[#151720] text-[#dde1f0] border border-white/[0.07]' : 'text-[#7e85a0] hover:text-[#dde1f0]'
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all hover:bg-[#151720] flex items-center gap-2 ${
+              rightTab === 'anomalies' ? 'bg-[#1a1d2e] text-[#dde1f0] border border-white/[0.1]' : 'text-[#7e85a0] hover:text-[#dde1f0]'
             }`}
           >
             🚨 Issues
@@ -210,24 +250,26 @@ export default function SimulationPage() {
           </button>
           <button
             onClick={() => setRightTab('optimizer')}
-            className={`px-2.5 py-1 rounded-md text-[11px] font-medium transition-all ${
-              rightTab === 'optimizer' ? 'bg-[#151720] text-[#dde1f0] border border-white/[0.07]' : 'text-[#7e85a0] hover:text-[#dde1f0]'
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all hover:bg-[#151720] ${
+              rightTab === 'optimizer' ? 'bg-[#1a1d2e] text-[#dde1f0] border border-white/[0.1]' : 'text-[#7e85a0] hover:text-[#dde1f0]'
             }`}
           >
-            ⚡ Opt
+            ⚡ Optimizer
           </button>
         </div>
 
         {/* CPU display strip */}
-        <div className="px-3 py-2 border-b border-white/[0.07] flex-shrink-0">
+        <div className="px-6 py-4 border-b border-white/[0.07] flex-shrink-0 bg-[#151720] rounded-lg mx-4 my-2 border border-white/[0.07]">
           <CPUDisplay />
         </div>
 
         {/* Right panel content */}
-        <div className="flex-1 overflow-y-auto px-3 py-3">
-          {rightTab === 'ai'        && <AIPanel />}
-          {rightTab === 'anomalies' && <AnomalyPanel />}
-          {rightTab === 'optimizer' && <QuantumOptimizerPanel />}
+        <div className="flex-1 overflow-y-auto px-6 py-6">
+          <div className="bg-[#151720] rounded-lg border border-white/[0.07] p-6 h-full">
+            {rightTab === 'ai'        && <AIPanel />}
+            {rightTab === 'anomalies' && <AnomalyPanel />}
+            {rightTab === 'optimizer' && <QuantumOptimizerPanel />}
+          </div>
         </div>
       </aside>
 

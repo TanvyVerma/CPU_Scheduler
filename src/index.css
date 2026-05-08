@@ -13,8 +13,8 @@
   --border-2: rgba(255, 255, 255, 0.13);
   --border-3: rgba(255, 255, 255, 0.2);
   --text: #dde1f0;
-  --text-2: #7e85a0;
-  --text-3: #454a60;
+  --text-2: #cbd5ff;
+  --text-3: #5f6b90;
   --accent: #7c6fff;
   --accent-2: #b39dff;
   --green: #0ecf8e;
@@ -40,7 +40,7 @@ body {
   font-family: 'Outfit', sans-serif;
   background: var(--bg-1);
   color: var(--text);
-  font-size: 13px;
+  font-size: 14px;
   -webkit-font-smoothing: antialiased;
 }
 
