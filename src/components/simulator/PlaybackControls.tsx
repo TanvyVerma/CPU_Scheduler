@@ -11,7 +11,7 @@ export default function PlaybackControls() {
   return (
     <div className="flex flex-col gap-4">
       <div className="flex gap-3 flex-wrap">
-        <Button variant="success" onClick={play} disabled={isPlaying} size="lg" className="font-semibold px-6 py-3 hover:scale-105 transition-transform">
+        <Button variant="success" onClick={play} disabled={isPlaying} size="md" className="font-semibold px-6 py-3 hover:scale-105 transition-transform">
           <Play size={16} />
           {isPlaying ? 'Playing…' : 'Simulate'}
         </Button>
