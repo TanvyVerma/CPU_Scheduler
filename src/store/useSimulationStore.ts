@@ -4,6 +4,7 @@ import { runAlgorithm } from '@/algorithms';
 import { runMultiCoreSimulation } from '@/engine/multiCoreEngine';
 import { ALGORITHM_INFO } from '@/data/algorithms';
 import { randomProcesses, generatePID } from '@/utils/helpers';
+import { getAnalyzeEndpoint } from '@/utils/apiConfig';
 
 interface SimStore {
   processes: Process[];
@@ -157,32 +158,16 @@ export const useSimulationStore = create<SimStore>((set, get) => ({
     set({ aiLoading: true, aiAnalysis: '' });
     const m = simResult.metrics;
     const algoName = ALGORITHM_INFO.find((a) => a.id === algorithm)?.fullName ?? algorithm;
-    const prompt = `You are a CPU scheduling systems expert. Analyze these simulation results.
-
-ALGORITHM: ${algoName} | QUANTUM: ${quantum}ms
-PROCESSES: ${processes.map((p) => `${p.id}(AT:${p.arrivalTime},BT:${p.burstTime},P:${p.priority})`).join(' ')}
-RESULTS: AvgWT=${m.avgWaitingTime.toFixed(2)}ms AvgTAT=${m.avgTurnaroundTime.toFixed(2)}ms CPU=${m.cpuUtilization.toFixed(1)}% CtxSw=${m.contextSwitches}
-PER-PROCESS: ${m.results.map((r) => `${r.id}(WT:${r.waitingTime},TAT:${r.turnaroundTime})`).join(' ')}
-
-In 3-4 sentences: (1) Is this good/poor for this workload? (2) Which algorithm would be better and why? (3) One concrete optimization. Wrap algorithm names in <strong> tags.`;
     try {
-      const apiKey = import.meta.env.VITE_GROQ_API_KEY;
-      console.log('API Key loaded:', !!apiKey, 'Key length:', apiKey?.length);
-      if (!apiKey) {
-        set({ aiAnalysis: 'API key not configured. Check environment variables.', aiLoading: false });
-        return;
-      }
-      const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+      const endpoint = getAnalyzeEndpoint();
+      const res = await fetch(endpoint, {
         method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${apiKey}`
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          model: 'openai/gpt-oss-20b',
-          messages: [{ role: 'user', content: prompt }],
-          max_tokens: 1000,
-          temperature: 0.7,
+          algoName,
+          quantum,
+          processes,
+          metrics: m,
         }),
       });
       if (!res.ok) {
@@ -190,15 +175,14 @@ In 3-4 sentences: (1) Is this good/poor for this workload? (2) Which algorithm w
         try {
           errData = await res.json();
         } catch {
-          errData = { error: res.statusText, body: await res.text() };
+          errData = { error: res.statusText };
         }
-        console.error('Groq API error response:', errData);
-        const msg = errData?.error?.message || errData?.error || res.statusText;
+        const msg = errData?.error || res.statusText;
         set({ aiAnalysis: `API Error ${res.status}: ${msg}`, aiLoading: false });
         return;
       }
       const data = await res.json();
-      const text = data.choices?.[0]?.message?.content ?? 'Analysis unavailable.';
+      const text = data.analysis ?? 'Analysis unavailable.';
       set({ aiAnalysis: text, aiLoading: false });
     } catch (e) { 
       console.error('AI analysis error:', e);
